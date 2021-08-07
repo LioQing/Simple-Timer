@@ -10,10 +10,12 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -45,7 +47,15 @@ namespace Simple_Timer
             this.InitializeComponent();
 
             Window.Current.CoreWindow.KeyDown += CoreWindow_KeyDown;
-            Window.Current.CoreWindow.KeyUp += CoreWindow_KeyUp; ;
+            Window.Current.CoreWindow.KeyUp += CoreWindow_KeyUp;
+
+            var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            titleBar.ButtonBackgroundColor = Colors.Transparent;
+            var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
+            coreTitleBar.ExtendViewIntoTitleBar = true;
+            coreTitleBar.LayoutMetricsChanged += CoreTitleBar_LayoutMetricsChanged;
+
+            Window.Current.SetTitleBar(AppTitleBar);
 
             DelayTimer = new DispatcherTimer();
             DelayTimer.Tick += DelayFinished;
@@ -70,8 +80,16 @@ namespace Simple_Timer
             configLoaded = true;
         }
 
+        private void CoreTitleBar_LayoutMetricsChanged(CoreApplicationViewTitleBar sender, object args)
+        {
+            AppTitleBar.Height = sender.Height;
+        }
+
         private void CoreWindow_KeyUp(CoreWindow sender, KeyEventArgs args)
         {
+            if (args.VirtualKey != Windows.System.VirtualKey.Space)
+                return;
+
             if (!isTiming)
             {
                 DelayTimer.Stop();
@@ -105,6 +123,9 @@ namespace Simple_Timer
 
         private void CoreWindow_KeyDown(CoreWindow sender, KeyEventArgs args)
         {
+            if (args.VirtualKey != Windows.System.VirtualKey.Space)
+                return;
+
             if (isDown)
                 return;
 
@@ -346,11 +367,11 @@ namespace Simple_Timer
 
             if (toggle.IsOn)
             {
-                MainSectionGrid.Background = Resources["SystemControlChromeHighAcrylicWindowMediumBrush"] as Brush;
+                MainSectionAcrylicGrid.Background = Resources["SystemControlChromeHighAcrylicWindowMediumBrush"] as Brush;
             }
             else
             {
-                MainSectionGrid.Background = Resources["ApplicationPageBackgroundThemeBrush"] as Brush;
+                MainSectionAcrylicGrid.Background = Resources["ApplicationPageBackgroundThemeBrush"] as Brush;
             }
 
             Configs.AcrylicToggle = toggle.IsOn;

@@ -9,141 +9,182 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     AllowFocusOnInteraction="False">
 
+    <Page.Resources>
+        <Style x:Key="TitleBarButton" TargetType="ToggleButton"
+               BasedOn="{StaticResource ToggleButtonRevealStyle}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0, 0, 0, 0"/>
+        </Style>
+    </Page.Resources>
+    
     <Grid>
-        <SplitView x:Name="Pane" PaneBackground="{ThemeResource SystemControlAcrylicWindowMediumHighBrush}"
-           IsPaneOpen="{Binding  ElementName=SettingsButton, Path=IsChecked}" OpenPaneLength="280" CompactPaneLength="48" DisplayMode="Inline">
-            <SplitView.Pane>
-                <Grid x:Name="PaneGrid" RowSpacing="10" Background="{ThemeResource SystemControlChromeLowAcrylicWindowBrush}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
 
-                    <TextBlock Text="Settings" 
+        <SplitView x:Name="Pane" PaneBackground="{ThemeResource SystemControlAcrylicWindowMediumHighBrush}"
+               IsPaneOpen="{Binding  ElementName=SettingsButton, Path=IsChecked}" OpenPaneLength="280" CompactPaneLength="48" 
+               DisplayMode="Inline">
+            <SplitView.Pane>
+                <Grid x:Name="PaneGrid" RowSpacing="10"
+                      Background="{ThemeResource SystemControlChromeLowAcrylicWindowBrush}">
+
+                    <ScrollViewer Margin="0, 32, 0, 0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Settings" 
                            Margin="12, 12, 12, 0" 
                            Style="{StaticResource TitleTextBlockStyle}"
                            HorizontalAlignment="Left"
                            Grid.Row="0"/>
 
-                    <Grid x:Name="SettingsList" 
-                      HorizontalAlignment="Stretch" 
-                      Grid.Row="1"
-                      Margin="12, 6, 12, 12">
-                        <Slider x:Name="TimerFontSizeSlider" 
-                            HorizontalAlignment="Stretch" 
-                            Minimum="24" Maximum="240" 
-                            Header="Timer Font Size"
-                            ValueChanged="TimerFontSizeSlider_ValueChanged"/>
-                    </Grid>
+                            <Grid x:Name="SettingsList" 
+                                  HorizontalAlignment="Stretch" 
+                                  Grid.Row="1"
+                                  Margin="12, 6, 12, 12">
+                                <Slider x:Name="TimerFontSizeSlider" 
+                                        HorizontalAlignment="Stretch" 
+                                        Minimum="24" Maximum="240" 
+                                        Header="Timer Font Size"
+                                        ValueChanged="TimerFontSizeSlider_ValueChanged"/>
+                            </Grid>
 
-                    <TextBlock Text="Optional Features" 
-                           Margin="12, 12, 12, 0" 
-                           Style="{StaticResource TitleTextBlockStyle}"
-                           HorizontalAlignment="Left"
-                           Grid.Row="2"/>
+                            <TextBlock Text="Optional Features" 
+                                       Margin="12, 12, 12, 0" 
+                                       Style="{StaticResource TitleTextBlockStyle}"
+                                       HorizontalAlignment="Left"
+                                       Grid.Row="2"/>
 
-                    <Grid x:Name="OptionsList" 
-                      HorizontalAlignment="Stretch" 
-                      Grid.Row="3"
-                      Margin="12, 6, 12, 12">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+                            <Grid x:Name="OptionsList" 
+                                  HorizontalAlignment="Stretch" 
+                                  Grid.Row="3"
+                                  Margin="12, 6, 12, 12">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
 
-                        <Grid HorizontalAlignment="Stretch">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Display mo3" VerticalAlignment="Center"/>
-                            <ToggleSwitch x:Name="mo3Toggle" Toggled="mo3Toggle_Toggled" HorizontalAlignment="Right" Grid.Column="1" MinWidth="32"/>
+                                <Grid HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Display mo3" VerticalAlignment="Center"/>
+                                    <ToggleSwitch x:Name="mo3Toggle" Toggled="mo3Toggle_Toggled" HorizontalAlignment="Right" Grid.Column="1" MinWidth="32"/>
+                                </Grid>
+
+                                <Grid HorizontalAlignment="Stretch" Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Display ao5" VerticalAlignment="Center"/>
+                                    <ToggleSwitch x:Name="ao5Toggle" Toggled="ao5Toggle_Toggled" HorizontalAlignment="Right" Grid.Column="1" MinWidth="32"/>
+                                </Grid>
+
+                                <Grid HorizontalAlignment="Stretch" Grid.Row="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Display ao12" VerticalAlignment="Center"/>
+                                    <ToggleSwitch x:Name="ao12Toggle" Toggled="ao12Toggle_Toggled" HorizontalAlignment="Right" Grid.Column="1" MinWidth="32"/>
+                                </Grid>
+
+                                <Grid HorizontalAlignment="Stretch" Grid.Row="3">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Display Scramble" VerticalAlignment="Center"/>
+                                    <ToggleSwitch x:Name="ScrambleToggle" Toggled="ScrambleToggle_Toggled" HorizontalAlignment="Right" Grid.Column="1" MinWidth="32"/>
+                                </Grid>
+
+                                <Grid HorizontalAlignment="Stretch" Grid.Row="4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="15s Inspection Timer" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                    <ToggleSwitch x:Name="InspectionToggle" Toggled="InspectionToggle_Toggled" HorizontalAlignment="Right" Grid.Column="1" MinWidth="32"/>
+                                </Grid>
+
+                                <Grid HorizontalAlignment="Stretch" Grid.Row="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Acrylic Timer Background" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                    <ToggleSwitch x:Name="AcrylicToggle" Toggled="AcrylicToggle_Toggled" HorizontalAlignment="Right" Grid.Column="1" MinWidth="32"/>
+                                </Grid>
+                            </Grid>
                         </Grid>
-
-                        <Grid HorizontalAlignment="Stretch" Grid.Row="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Display ao5" VerticalAlignment="Center"/>
-                            <ToggleSwitch x:Name="ao5Toggle" Toggled="ao5Toggle_Toggled" HorizontalAlignment="Right" Grid.Column="1" MinWidth="32"/>
-                        </Grid>
-
-                        <Grid HorizontalAlignment="Stretch" Grid.Row="2">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Display ao12" VerticalAlignment="Center"/>
-                            <ToggleSwitch x:Name="ao12Toggle" Toggled="ao12Toggle_Toggled" HorizontalAlignment="Right" Grid.Column="1" MinWidth="32"/>
-                        </Grid>
-
-                        <Grid HorizontalAlignment="Stretch" Grid.Row="3">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Display Scramble" VerticalAlignment="Center"/>
-                            <ToggleSwitch x:Name="ScrambleToggle" Toggled="ScrambleToggle_Toggled" HorizontalAlignment="Right" Grid.Column="1" MinWidth="32"/>
-                        </Grid>
-
-                        <Grid HorizontalAlignment="Stretch" Grid.Row="4">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="15s Inspection Timer" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                            <ToggleSwitch x:Name="InspectionToggle" Toggled="InspectionToggle_Toggled" HorizontalAlignment="Right" Grid.Column="1" MinWidth="32"/>
-                        </Grid>
-
-                        <Grid HorizontalAlignment="Stretch" Grid.Row="5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Acrylic Timer Background" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                            <ToggleSwitch x:Name="AcrylicToggle" Toggled="AcrylicToggle_Toggled" HorizontalAlignment="Right" Grid.Column="1" MinWidth="32"/>
-                        </Grid>
-                    </Grid>
+                    </ScrollViewer>
                 </Grid>
             </SplitView.Pane>
 
-            <Grid x:Name="MainSectionGrid">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="4*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+            <Grid x:Name="MainSectionAcrylicGrid">
 
-                <Grid.KeyboardAccelerators>
-                    <KeyboardAccelerator Key="Space"/>
-                </Grid.KeyboardAccelerators>
+                <Grid x:Name="MainSectionGrid" Margin="0, 32, 0, 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="4*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                <ToggleButton x:Name="SettingsButton" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20, 20, 0, 0">
-                    <SymbolIcon Symbol="Setting"/>
-                </ToggleButton>
+                    <Grid.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Space"/>
+                    </Grid.KeyboardAccelerators>
 
-                <StackPanel x:Name="MainSectionPanel"
+                    <StackPanel x:Name="MainSectionPanel"
                         Orientation="Vertical" Spacing="10" 
                         Grid.Column="1" 
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center">
 
-                    <TextBlock x:Name="TimerText"
+                        <TextBlock x:Name="TimerText"
                                Style="{ThemeResource HeaderTextBlockStyle}" 
                                Text="Timer"
                                Foreground="{ThemeResource DefaultTextForegroundThemeBrush}"
                                FontFamily="Consolas"
                                FontSize="{Binding ElementName=TimerFontSizeSlider, Path=Value}"
                                HorizontalAlignment="Center"/>
-                </StackPanel>
+                    </StackPanel>
+                </Grid>
             </Grid>
         </SplitView>
+
+        <Grid x:Name="AppTitleBar" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <!-- Width of the padding columns is set in LayoutMetricsChanged handler. -->
+            <!-- Using padding columns instead of Margin ensures that the background
+         paints the area under the caption control buttons (for transparent buttons). -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
+                <ColumnDefinition/>
+                <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Simple Timer" 
+                       Grid.Column="1" 
+                       Style="{StaticResource CaptionTextBlockStyle}" 
+                       Margin="43, 8, 0, 0"/>
+        </Grid>
+
+        <Viewbox Height="32" Width="32" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <ToggleButton x:Name="SettingsButton" Height="32" Width="32" CornerRadius="0" Style="{StaticResource TitleBarButton}">
+                <SymbolIcon Symbol="Setting" Margin="-6.5,-2.5,-6,-3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </ToggleButton>
+        </Viewbox>
     </Grid>
 </Page>
