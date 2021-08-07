@@ -35,8 +35,8 @@ namespace Simple_Timer
         private DispatcherTimer DelayTimer { get; set; }
         private Stopwatch TimerTimer { get; set; } = new Stopwatch();
         private bool isDown = false;
-        private bool wasDown = false;
         private bool isTiming = false;
+        private bool isInspecting = false;
         private bool canStartTiming = false;
         private bool configLoaded = false;
 
@@ -63,6 +63,9 @@ namespace Simple_Timer
             mo3Toggle.IsOn = Configs.Mo3Toggle;
             ao5Toggle.IsOn = Configs.Ao5Toggle;
             ao12Toggle.IsOn = Configs.Ao12Toggle;
+            InspectionToggle.IsOn = Configs.InspectionToggle;
+            ScrambleToggle.IsOn = Configs.ScrambleToggle;
+            AcrylicToggle.IsOn = Configs.AcrylicToggle;
 
             configLoaded = true;
         }
@@ -72,45 +75,63 @@ namespace Simple_Timer
             if (!isTiming)
             {
                 DelayTimer.Stop();
-                TimerText.Foreground = new SolidColorBrush(Colors.Black);
-                isTiming = true;
+                TimerText.Foreground = Resources["DefaultTextForegroundThemeBrush"] as Brush;
 
                 if (canStartTiming)
                 {
-                    TimerTimer.Restart();
-                    TimerTimer.Start();
-                    canStartTiming = !canStartTiming;
+                    if (Configs.InspectionToggle && !isInspecting)
+                    {
+                        isInspecting = true;
+                        TimerTimer.Restart();
+                        TimerTimer.Start();
+                    }
+                    else
+                    {
+                        isInspecting = false;
+                        isTiming = true;
+                        TimerTimer.Restart();
+                        TimerTimer.Start();
+                        canStartTiming = !canStartTiming;
+                    }
                 }
-            }
-            else
-            {
-                TimerText.Foreground = new SolidColorBrush(Colors.Black);
-                TimerTimer.Stop();
-            }
-        }
-
-        private void CoreWindow_KeyDown(CoreWindow sender, KeyEventArgs args)
-        {
-            if (!isTiming)
-            {
-                TimerText.Foreground = new SolidColorBrush(Colors.Red);
-                DelayTimer.Interval = new TimeSpan(0, 0, 0, 0, 300);
-                DelayTimer.Start();
             }
             else
             {
                 isTiming = false;
             }
+
+            isDown = false;
+        }
+
+        private void CoreWindow_KeyDown(CoreWindow sender, KeyEventArgs args)
+        {
+            if (isDown)
+                return;
+
+            if (!isTiming && !isInspecting)
+            {
+                TimerText.Foreground = new SolidColorBrush(Colors.Red);
+                DelayTimer.Interval = new TimeSpan(0, 0, 0, 0, 300);
+                DelayTimer.Start();
+            }
+            else if (isTiming && !isInspecting)
+            {
+                TimerText.Foreground = Resources["DefaultTextForegroundThemeBrush"] as Brush;
+                TimerTimer.Stop();
+            }
+
+            isDown = true;
         }
 
         private void DelayFinished(object sender, object e)
         {
             DelayTimer.Stop();
 
-            canStartTiming = true;
-
             if (isDown)
+            {
+                canStartTiming = true;
                 TimerText.Foreground = new SolidColorBrush(Colors.Green);
+            }
         }
 
         private void TimerUpdateLoop(object sender, object args)
@@ -118,9 +139,17 @@ namespace Simple_Timer
             var timer = sender as DispatcherTimer;
             timer.Interval = new TimeSpan(0, 0, 0, 0, 8);
 
-            TimerText.Text = TimerTimer.Elapsed.ToString("mm\\:ss\\.fff");
+            var time = TimerTimer.Elapsed;
 
-            wasDown = isDown;
+            if (time.Hours > 0)
+                TimerText.Text = time.ToString(@"h\:mm\:ss.fff");
+            else if (time.Minutes > 0)
+                TimerText.Text = time.ToString(@"m\:ss\.fff");
+            else
+                TimerText.Text = time.ToString(@"s\.fff");
+
+            if (isInspecting)
+                TimerText.Text = time.Seconds.ToString();
         }
 
         private void UpdateAverageTexts()
@@ -152,7 +181,8 @@ namespace Simple_Timer
             if (!configLoaded)
                 return;
 
-            Configs.Save();
+            var task = Task.Run(Configs.Save);
+            task.Wait();
         }
 
         private void mo3Toggle_Toggled(object sender, RoutedEventArgs e)
@@ -236,7 +266,7 @@ namespace Simple_Timer
             UpdateAverageTexts();
         }
 
-        private async void TimerFontSizeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        private void TimerFontSizeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             if (Configs is null || !configLoaded)
                 return;
@@ -247,7 +277,85 @@ namespace Simple_Timer
             if (!configLoaded)
                 return;
 
-            Configs.Save();
+            var task = Task.Run(Configs.Save);
+            task.Wait();
+        }
+
+        private void ScrambleToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            var toggle = sender as ToggleSwitch;
+
+            if (toggle.IsOn)
+            {
+                var scramblePanel = new StackPanel();
+                Grid.SetColumn(scramblePanel, 1);
+                scramblePanel.Name = "ScramblePanel";
+                scramblePanel.HorizontalAlignment = HorizontalAlignment.Center;
+                scramblePanel.VerticalAlignment = VerticalAlignment.Top;
+                scramblePanel.Margin = new Thickness(10, 20, 10, 10);
+
+                var scrambleTitle = new TextBlock();
+                scrambleTitle.HorizontalAlignment = HorizontalAlignment.Center;
+                scrambleTitle.Style = Resources["TitleTextBlockStyle"] as Style;
+                scrambleTitle.FontSize = 18;
+                scrambleTitle.Text = "Scramble Title";
+
+                var scramble = new TextBlock();
+                scramble.HorizontalAlignment = HorizontalAlignment.Center;
+                scramble.Style = Resources["BodyTextBlockStyle"] as Style;
+                scramble.FontSize = 24;
+                scramble.Text = "Scramble Moves";
+
+                scramblePanel.Children.Add(scrambleTitle);
+                scramblePanel.Children.Add(scramble);
+
+                MainSectionGrid.Children.Add(scramblePanel);
+            }
+            else
+            {
+                for (int i = MainSectionGrid.Children.Count; i > -1; --i)
+                {
+                    var text = MainSectionGrid.Children[i] as TextBlock;
+
+                    if (text is null || text.Name != "ScramblePanel")
+                        continue;
+
+                    MainSectionGrid.Children.RemoveAt(i);
+                    break;
+                }
+            }
+
+            Configs.ScrambleToggle = toggle.IsOn;
+            var task = Task.Run(Configs.Save);
+            task.Wait();
+        }
+
+        private void InspectionToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            var toggle = sender as ToggleSwitch;
+
+            Configs.InspectionToggle = toggle.IsOn;
+
+            var task = Task.Run(Configs.Save);
+            task.Wait();
+        }
+
+        private void AcrylicToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            var toggle = sender as ToggleSwitch;
+
+            if (toggle.IsOn)
+            {
+                MainSectionGrid.Background = Resources["SystemControlChromeHighAcrylicWindowMediumBrush"] as Brush;
+            }
+            else
+            {
+                MainSectionGrid.Background = Resources["ApplicationPageBackgroundThemeBrush"] as Brush;
+            }
+
+            Configs.AcrylicToggle = toggle.IsOn;
+            var task = Task.Run(Configs.Save);
+            task.Wait();
         }
     }
 }

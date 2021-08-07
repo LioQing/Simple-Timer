@@ -15,11 +15,18 @@ namespace Simple_Timer
         public bool Mo3Toggle { get; set; }
         public bool Ao5Toggle { get; set; }
         public bool Ao12Toggle { get; set; }
+        public bool ScrambleToggle { get; set; }
+        public bool InspectionToggle { get; set; }
+        public bool AcrylicToggle { get; set; }
+
         public void SetToggles(bool isOn = false)
         {
             Mo3Toggle = isOn;
             Ao5Toggle = isOn;
             Ao12Toggle = isOn;
+            InspectionToggle = isOn;
+            ScrambleToggle = isOn;
+            AcrylicToggle = isOn;
         }
 
         public async Task Save()
@@ -66,6 +73,9 @@ namespace Simple_Timer
             this.Mo3Toggle = tmpThis.Mo3Toggle;
             this.Ao5Toggle = tmpThis.Ao5Toggle;
             this.Ao12Toggle = tmpThis.Ao12Toggle;
+            this.InspectionToggle = tmpThis.InspectionToggle;
+            this.ScrambleToggle = tmpThis.ScrambleToggle;
+            this.AcrylicToggle = tmpThis.AcrylicToggle;
         }
     }
 }
