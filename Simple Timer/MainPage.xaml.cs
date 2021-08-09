@@ -1,8 +1,5 @@
 ﻿using Microsoft.UI;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,6 +17,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media;
+using Notepads.Brushes;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -78,6 +76,13 @@ namespace Simple_Timer
             AcrylicToggle.IsOn = Configs.AcrylicToggle;
 
             configLoaded = true;
+            //var navViewBrush = Resources["NavigationViewExpandedPaneBackground"] as SolidColorBrush;
+            var navViewBrush = Resources["ApplicationPageBackgroundThemeBrush"] as SolidColorBrush;
+            PaneGrid.Background = new HostBackdropAcrylicBrush() 
+            { 
+                TintOpacity = 0.4f, 
+                LuminosityColor = navViewBrush.Color 
+            };
         }
 
         private void CoreTitleBar_LayoutMetricsChanged(CoreApplicationViewTitleBar sender, object args)
@@ -309,7 +314,6 @@ namespace Simple_Timer
             if (toggle.IsOn)
             {
                 var scramblePanel = new StackPanel();
-                Grid.SetColumn(scramblePanel, 1);
                 scramblePanel.Name = "ScramblePanel";
                 scramblePanel.HorizontalAlignment = HorizontalAlignment.Center;
                 scramblePanel.VerticalAlignment = VerticalAlignment.Top;
@@ -367,7 +371,12 @@ namespace Simple_Timer
 
             if (toggle.IsOn)
             {
-                MainSectionAcrylicGrid.Background = Resources["SystemControlChromeHighAcrylicWindowMediumBrush"] as Brush;
+                var pageBrush = Resources["ApplicationPageBackgroundThemeBrush"] as SolidColorBrush;
+                MainSectionAcrylicGrid.Background = new HostBackdropAcrylicBrush()
+                {
+                    TintOpacity = 0.2f,
+                    LuminosityColor = pageBrush.Color
+                };
             }
             else
             {
