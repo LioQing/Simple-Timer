@@ -34,6 +34,7 @@ namespace Simple_Timer
         private DispatcherTimer UpdateTimer { get; set; }
         private DispatcherTimer DelayTimer { get; set; }
         private Stopwatch TimerTimer { get; set; } = new Stopwatch();
+        private DropDownButton ScrambleTitleDropDownButton { get; set; }
         private bool isDown = false;
         private bool isTiming = false;
         private bool isInspecting = false;
@@ -49,6 +50,7 @@ namespace Simple_Timer
 
             var titleBar = ApplicationView.GetForCurrentView().TitleBar;
             titleBar.ButtonBackgroundColor = Colors.Transparent;
+            titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
             var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
             coreTitleBar.ExtendViewIntoTitleBar = true;
             coreTitleBar.LayoutMetricsChanged += CoreTitleBar_LayoutMetricsChanged;
@@ -76,7 +78,6 @@ namespace Simple_Timer
             AcrylicToggle.IsOn = Configs.AcrylicToggle;
 
             configLoaded = true;
-            //var navViewBrush = Resources["NavigationViewExpandedPaneBackground"] as SolidColorBrush;
             var navViewBrush = Resources["ApplicationPageBackgroundThemeBrush"] as SolidColorBrush;
             PaneGrid.Background = new HostBackdropAcrylicBrush() 
             { 
@@ -186,7 +187,7 @@ namespace Simple_Timer
             {
                 var text = MainSectionPanel.Children[i] as TextBlock;
 
-                if (text.Name == "mo3Text" || text.Name == "ao5Text" || text.Name == "ao12Text")
+                if (!(text is null) && (text.Name == "mo3Text" || text.Name == "ao5Text" || text.Name == "ao12Text"))
                 {
                     MainSectionPanel.Children.RemoveAt(i);
                 }
@@ -319,11 +320,23 @@ namespace Simple_Timer
                 scramblePanel.VerticalAlignment = VerticalAlignment.Top;
                 scramblePanel.Margin = new Thickness(10, 20, 10, 10);
 
-                var scrambleTitle = new TextBlock();
-                scrambleTitle.HorizontalAlignment = HorizontalAlignment.Center;
-                scrambleTitle.Style = Resources["TitleTextBlockStyle"] as Style;
-                scrambleTitle.FontSize = 18;
-                scrambleTitle.Text = "Scramble Title";
+                ScrambleTitleDropDownButton = new DropDownButton();
+                ScrambleTitleDropDownButton.CornerRadius = new CornerRadius(4d);
+                ScrambleTitleDropDownButton.HorizontalAlignment = HorizontalAlignment.Center;
+                ScrambleTitleDropDownButton.FontSize = 18;
+                ScrambleTitleDropDownButton.Content = "Select a Cube";
+                ScrambleTitleDropDownButton.Width = 180;
+                ScrambleTitleDropDownButton.Flyout = new MenuFlyout() { Placement = FlyoutPlacementMode.Bottom };
+
+                var menuFlyout = ScrambleTitleDropDownButton.Flyout as MenuFlyout;
+                menuFlyout.Items.Add(new MenuFlyoutItem() { Text = "2x2" });
+                menuFlyout.Items.Add(new MenuFlyoutItem() { Text = "3x3" });
+                menuFlyout.Items.Add(new MenuFlyoutItem() { Text = "4x4" });
+
+                foreach (MenuFlyoutItem item in menuFlyout.Items)
+                {
+                    item.Click += ScrambleTitleChanged;
+                }
 
                 var scramble = new TextBlock();
                 scramble.HorizontalAlignment = HorizontalAlignment.Center;
@@ -331,7 +344,7 @@ namespace Simple_Timer
                 scramble.FontSize = 24;
                 scramble.Text = "Scramble Moves";
 
-                scramblePanel.Children.Add(scrambleTitle);
+                scramblePanel.Children.Add(ScrambleTitleDropDownButton);
                 scramblePanel.Children.Add(scramble);
 
                 MainSectionGrid.Children.Add(scramblePanel);
@@ -340,9 +353,9 @@ namespace Simple_Timer
             {
                 for (int i = MainSectionGrid.Children.Count; i > -1; --i)
                 {
-                    var text = MainSectionGrid.Children[i] as TextBlock;
+                    var panel = MainSectionGrid.Children[i] as StackPanel;
 
-                    if (text is null || text.Name != "ScramblePanel")
+                    if (panel is null || panel.Name != "ScramblePanel")
                         continue;
 
                     MainSectionGrid.Children.RemoveAt(i);
@@ -353,6 +366,12 @@ namespace Simple_Timer
             Configs.ScrambleToggle = toggle.IsOn;
             var task = Task.Run(Configs.Save);
             task.Wait();
+        }
+
+        private void ScrambleTitleChanged(object sender, RoutedEventArgs e)
+        {
+            var item = sender as MenuFlyoutItem;
+            ScrambleTitleDropDownButton.Content = item.Text;
         }
 
         private void InspectionToggle_Toggled(object sender, RoutedEventArgs e)
