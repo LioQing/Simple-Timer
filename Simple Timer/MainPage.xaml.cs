@@ -35,6 +35,7 @@ namespace Simple_Timer
         private DispatcherTimer DelayTimer { get; set; }
         private Stopwatch TimerTimer { get; set; } = new Stopwatch();
         private DropDownButton ScrambleTitleDropDownButton { get; set; }
+        private TextBlock ScrambleText { get; set; }
         private bool isDown = false;
         private bool isTiming = false;
         private bool isInspecting = false;
@@ -69,6 +70,7 @@ namespace Simple_Timer
             var task = Task.Run(Configs.Load);
             task.Wait();
 
+            ScrambleFontSizeSlider.Value = Configs.ScrambleFontSize;
             TimerFontSizeSlider.Value = Configs.TimerFontSize;
             mo3Toggle.IsOn = Configs.Mo3Toggle;
             ao5Toggle.IsOn = Configs.Ao5Toggle;
@@ -77,7 +79,16 @@ namespace Simple_Timer
             ScrambleToggle.IsOn = Configs.ScrambleToggle;
             AcrylicToggle.IsOn = Configs.AcrylicToggle;
 
+            if (!(ScrambleTitleDropDownButton is null))
+            {
+                ScrambleTitleDropDownButton.Content = Configs.ScrambleCubeType;
+                ScrambleText.Text = ScrambleGenerator.GetScrambleMoves(Configs.ScrambleCubeType);
+            }
+
             configLoaded = true;
+
+            ScrambleText.FontSize = Configs.ScrambleFontSize;
+
             var navViewBrush = Resources["ApplicationPageBackgroundThemeBrush"] as SolidColorBrush;
             PaneGrid.Background = new HostBackdropAcrylicBrush() 
             { 
@@ -122,6 +133,7 @@ namespace Simple_Timer
             else
             {
                 isTiming = false;
+                ScrambleText.Text = ScrambleGenerator.GetScrambleMoves(ScrambleTitleDropDownButton.Content as string);
             }
 
             isDown = false;
@@ -292,6 +304,21 @@ namespace Simple_Timer
 
             UpdateAverageTexts();
         }
+        private void ScrambleFontSizeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            if (Configs is null || !configLoaded)
+                return;
+
+            var slider = sender as Slider;
+            Configs.ScrambleFontSize = (int)slider.Value;
+            ScrambleText.FontSize = Configs.ScrambleFontSize;
+
+            if (!configLoaded)
+                return;
+
+            var task = Task.Run(Configs.Save);
+            task.Wait();
+        }
 
         private void TimerFontSizeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
@@ -323,29 +350,28 @@ namespace Simple_Timer
                 ScrambleTitleDropDownButton = new DropDownButton();
                 ScrambleTitleDropDownButton.CornerRadius = new CornerRadius(4d);
                 ScrambleTitleDropDownButton.HorizontalAlignment = HorizontalAlignment.Center;
-                ScrambleTitleDropDownButton.FontSize = 18;
                 ScrambleTitleDropDownButton.Content = "Select a Cube";
                 ScrambleTitleDropDownButton.Width = 180;
                 ScrambleTitleDropDownButton.Flyout = new MenuFlyout() { Placement = FlyoutPlacementMode.Bottom };
 
                 var menuFlyout = ScrambleTitleDropDownButton.Flyout as MenuFlyout;
-                menuFlyout.Items.Add(new MenuFlyoutItem() { Text = "2x2" });
-                menuFlyout.Items.Add(new MenuFlyoutItem() { Text = "3x3" });
-                menuFlyout.Items.Add(new MenuFlyoutItem() { Text = "4x4" });
+                menuFlyout.Items.Add(new MenuFlyoutItem() { Text = "2x2x2" });
+                menuFlyout.Items.Add(new MenuFlyoutItem() { Text = "3x3x3" });
+                menuFlyout.Items.Add(new MenuFlyoutItem() { Text = "4x4x4" });
 
                 foreach (MenuFlyoutItem item in menuFlyout.Items)
                 {
                     item.Click += ScrambleTitleChanged;
                 }
 
-                var scramble = new TextBlock();
-                scramble.HorizontalAlignment = HorizontalAlignment.Center;
-                scramble.Style = Resources["BodyTextBlockStyle"] as Style;
-                scramble.FontSize = 24;
-                scramble.Text = "Scramble Moves";
+                ScrambleText = new TextBlock();
+                ScrambleText.TextAlignment = TextAlignment.Center;
+                ScrambleText.HorizontalAlignment = HorizontalAlignment.Center;
+                ScrambleText.Style = Resources["BodyTextBlockStyle"] as Style;
+                ScrambleText.Text = "Scramble Moves";
 
                 scramblePanel.Children.Add(ScrambleTitleDropDownButton);
-                scramblePanel.Children.Add(scramble);
+                scramblePanel.Children.Add(ScrambleText);
 
                 MainSectionGrid.Children.Add(scramblePanel);
             }
@@ -372,6 +398,12 @@ namespace Simple_Timer
         {
             var item = sender as MenuFlyoutItem;
             ScrambleTitleDropDownButton.Content = item.Text;
+            Configs.ScrambleCubeType = item.Text;
+
+            var task = Task.Run(Configs.Save);
+            task.Wait();
+
+            ScrambleText.Text = ScrambleGenerator.GetScrambleMoves(item.Text);
         }
 
         private void InspectionToggle_Toggled(object sender, RoutedEventArgs e)

@@ -11,6 +11,8 @@ namespace Simple_Timer
 {
     public class Configs
     {
+        public string ScrambleCubeType { get; set; }
+        public int ScrambleFontSize { get; set; }
         public int TimerFontSize { get; set; }
         public bool Mo3Toggle { get; set; }
         public bool Ao5Toggle { get; set; }
@@ -69,6 +71,8 @@ namespace Simple_Timer
                 tmpThis = JsonSerializer.Deserialize<Configs>(jsonString);
             }
 
+            this.ScrambleCubeType = tmpThis.ScrambleCubeType;
+            this.ScrambleFontSize = tmpThis.ScrambleFontSize;
             this.TimerFontSize = tmpThis.TimerFontSize;
             this.Mo3Toggle = tmpThis.Mo3Toggle;
             this.Ao5Toggle = tmpThis.Ao5Toggle;

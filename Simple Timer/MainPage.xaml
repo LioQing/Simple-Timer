@@ -42,11 +42,23 @@
                                   HorizontalAlignment="Stretch" 
                                   Grid.Row="1"
                                   Margin="12, 6, 12, 12">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            
                             <Slider x:Name="TimerFontSizeSlider" 
-                                        HorizontalAlignment="Stretch" 
-                                        Minimum="24" Maximum="240" 
-                                        Header="Timer Font Size"
-                                        ValueChanged="TimerFontSizeSlider_ValueChanged"/>
+                                    HorizontalAlignment="Stretch" 
+                                    Minimum="24" Maximum="180" 
+                                    Header="Timer Font Size"
+                                    ValueChanged="TimerFontSizeSlider_ValueChanged"/>
+                            
+                            <Slider x:Name="ScrambleFontSizeSlider" 
+                                    HorizontalAlignment="Stretch" 
+                                    Minimum="8" Maximum="90" 
+                                    Header="Scramble Font Size"
+                                    ValueChanged="ScrambleFontSizeSlider_ValueChanged"
+                                    Grid.Row="1"/>
                         </Grid>
 
                         <TextBlock Text="Optional Features" 
