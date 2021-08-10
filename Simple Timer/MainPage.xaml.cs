@@ -29,6 +29,9 @@ namespace Simple_Timer
     public sealed partial class MainPage : Page
     {
         public int PaneWidth { get; set; } = 240;
+        public float Mo3 { get; set; } = 0f;
+        public float Ao5 { get; set; } = 0f;
+        public float Ao12 { get; set; } = 0f;
         public Configs Configs { get; set; }
         private List<TextBlock> AverageTexts { get; set; } = new List<TextBlock>();
         private DispatcherTimer UpdateTimer { get; set; }
@@ -36,6 +39,8 @@ namespace Simple_Timer
         private Stopwatch TimerTimer { get; set; } = new Stopwatch();
         private DropDownButton ScrambleTitleDropDownButton { get; set; }
         private TextBlock ScrambleText { get; set; }
+        private float?[] Times { get; set; } = new float?[12];
+        private int TimesIndex { get; set; } = 0;
         private bool isDown = false;
         private bool isTiming = false;
         private bool isInspecting = false;
@@ -133,10 +138,89 @@ namespace Simple_Timer
             else
             {
                 isTiming = false;
+
+                AddTime(TimerTimer.ElapsedMilliseconds / 1000f);
+
+                foreach (var text in AverageTexts)
+                {
+                    if (text.Name == "mo3Text" && Configs.Mo3Toggle == true) text.Text = $"mo3: {ToStringTimeFormatted(new TimeSpan(0, 0, 0, 0, (int)(Mo3 * 1000)))}";
+                    else if (text.Name == "ao5Text" && Configs.Ao5Toggle == true) text.Text = $"ao5: {ToStringTimeFormatted(new TimeSpan(0, 0, 0, 0, (int)(Ao5 * 1000)))}";
+                    else if (text.Name == "ao12Text" && Configs.Ao12Toggle == true) text.Text = $"ao12: {ToStringTimeFormatted(new TimeSpan(0, 0, 0, 0, (int)(Ao12 * 1000)))}";
+                }
+
                 ScrambleText.Text = ScrambleGenerator.GetScrambleMoves(ScrambleTitleDropDownButton.Content as string);
             }
 
             isDown = false;
+        }
+
+        private void AddTime(float time)
+        {
+            Times[TimesIndex] = time;
+            TimesIndex = (TimesIndex + 1) % Times.Length;
+
+            // mo3
+            if (Configs.Mo3Toggle)
+            {
+                float sum = 0f;
+                float isEnough = 1f;
+                for (var i = 0; i < 3; ++i)
+                {
+                    var j = TimesIndex - i - 1;
+                    if (j < 0) j += Times.Length;
+
+                    if (!Times[j].HasValue)
+                    {
+                        isEnough = 0f;
+                        break;
+                    }
+
+                    sum += Times[j].Value;
+                }
+                Mo3 = isEnough * sum / 3f;
+            }
+
+            // ao5
+            if (Configs.Ao5Toggle)
+            {
+                float[] sumList = new float[5];
+                float isEnough = 1f;
+                for (var i = 0; i < 5; ++i)
+                {
+                    var j = TimesIndex - i - 1;
+                    if (j < 0) j += Times.Length;
+
+                    if (!Times[j].HasValue)
+                    {
+                        isEnough = 0f;
+                        break;
+                    }
+
+                    sumList[i] = Times[j].Value;
+                }
+                Ao5 = isEnough * (sumList.Sum() - sumList.Max() - sumList.Min()) / 3f;
+            }
+
+            // ao12
+            if (Configs.Ao12Toggle)
+            {
+                float[] sumList = new float[12];
+                float isEnough = 1f;
+                for (var i = 0; i < 12; ++i)
+                {
+                    var j = TimesIndex - i - 1;
+                    if (j < 0) j += Times.Length;
+
+                    if (!Times[j].HasValue)
+                    {
+                        isEnough = 0f;
+                        break;
+                    }                    
+
+                    sumList[i] = Times[j].Value;
+                }
+                Ao12 = isEnough * (sumList.Sum() - sumList.Max() - sumList.Min()) / 10f;
+            }
         }
 
         private void CoreWindow_KeyDown(CoreWindow sender, KeyEventArgs args)
@@ -179,16 +263,20 @@ namespace Simple_Timer
             timer.Interval = new TimeSpan(0, 0, 0, 0, 8);
 
             var time = TimerTimer.Elapsed;
-
-            if (time.Hours > 0)
-                TimerText.Text = time.ToString(@"h\:mm\:ss.fff");
-            else if (time.Minutes > 0)
-                TimerText.Text = time.ToString(@"m\:ss\.fff");
-            else
-                TimerText.Text = time.ToString(@"s\.fff");
+            TimerText.Text = ToStringTimeFormatted(time);
 
             if (isInspecting)
                 TimerText.Text = time.Seconds.ToString();
+        }
+
+        private string ToStringTimeFormatted(TimeSpan time)
+        {
+            if (time.Hours > 0)
+                return time.ToString(@"h\:mm\:ss.fff");
+            else if (time.Minutes > 0)
+                return time.ToString(@"m\:ss\.fff");
+            else
+                return time.ToString(@"s\.fff");
         }
 
         private void UpdateAverageTexts()
@@ -232,7 +320,7 @@ namespace Simple_Timer
             {
                 var text = new TextBlock();
                 text.Name = "mo3Text";
-                text.Text = "mo3: -";
+                text.Text = "mo3: 0.00";
                 text.HorizontalAlignment = HorizontalAlignment.Center;
                 AverageTexts.Add(text);
             }
@@ -259,7 +347,7 @@ namespace Simple_Timer
             {
                 var text = new TextBlock();
                 text.Name = "ao5Text";
-                text.Text = "ao5: -";
+                text.Text = "ao5: 0.00";
                 text.HorizontalAlignment = HorizontalAlignment.Center;
                 AverageTexts.Add(text);
             }
@@ -286,7 +374,7 @@ namespace Simple_Timer
             {
                 var text = new TextBlock();
                 text.Name = "ao12Text";
-                text.Text = "ao12: -";
+                text.Text = "ao12: 0.00";
                 text.HorizontalAlignment = HorizontalAlignment.Center;
                 AverageTexts.Add(text);
             }
