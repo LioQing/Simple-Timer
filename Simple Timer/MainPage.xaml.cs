@@ -320,7 +320,7 @@ namespace Simple_Timer
             {
                 var text = new TextBlock();
                 text.Name = "mo3Text";
-                text.Text = "mo3: 0.00";
+                text.Text = "mo3: 0.000";
                 text.HorizontalAlignment = HorizontalAlignment.Center;
                 AverageTexts.Add(text);
             }
@@ -347,7 +347,7 @@ namespace Simple_Timer
             {
                 var text = new TextBlock();
                 text.Name = "ao5Text";
-                text.Text = "ao5: 0.00";
+                text.Text = "ao5: 0.000";
                 text.HorizontalAlignment = HorizontalAlignment.Center;
                 AverageTexts.Add(text);
             }
@@ -374,7 +374,7 @@ namespace Simple_Timer
             {
                 var text = new TextBlock();
                 text.Name = "ao12Text";
-                text.Text = "ao12: 0.00";
+                text.Text = "ao12: 0.000";
                 text.HorizontalAlignment = HorizontalAlignment.Center;
                 AverageTexts.Add(text);
             }
@@ -430,6 +430,7 @@ namespace Simple_Timer
             if (toggle.IsOn)
             {
                 var scramblePanel = new StackPanel();
+                scramblePanel.Spacing = 10;
                 scramblePanel.Name = "ScramblePanel";
                 scramblePanel.HorizontalAlignment = HorizontalAlignment.Center;
                 scramblePanel.VerticalAlignment = VerticalAlignment.Top;
